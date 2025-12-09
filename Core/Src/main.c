@@ -124,6 +124,21 @@ int _write(int file, char *ptr, int len) {
      LWIP_UNUSED_ARG(connection);
 
 
+     struct pbuf *q = p;
+
+        printf("POST packet ontvangen:\n");
+
+        while (q != NULL)
+        {
+            // Print de bytes als tekst
+            printf("%.*s", q->len, (char *)q->payload);
+
+            q = q->next; // Volgende block
+        }
+
+        printf("\n====================\n");
+
+
      pbuf_free(p);
 
      return ERR_OK;

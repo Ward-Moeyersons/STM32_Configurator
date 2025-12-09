@@ -1,10 +1,10 @@
 ../Core/Src/main.c:74:5:_write	32	static
 ../Core/Src/main.c:83:7:httpd_cgi_handler	24	static
 ../Core/Src/main.c:104:8:httpd_post_begin	24	static
-../Core/Src/main.c:122:8:httpd_post_receive_data	16	static
-../Core/Src/main.c:132:7:httpd_post_finished	24	static
-../Core/Src/main.c:148:5:main	8	static
-../Core/Src/main.c:199:6:SystemClock_Config	88	static
-../Core/Src/main.c:250:13:MX_USART1_UART_Init	8	static
-../Core/Src/main.c:285:13:MX_GPIO_Init	56	static
-../Core/Src/main.c:327:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:122:8:httpd_post_receive_data	24	static
+../Core/Src/main.c:147:7:httpd_post_finished	24	static
+../Core/Src/main.c:163:5:main	8	static
+../Core/Src/main.c:214:6:SystemClock_Config	88	static
+../Core/Src/main.c:265:13:MX_USART1_UART_Init	8	static
+../Core/Src/main.c:300:13:MX_GPIO_Init	56	static
+../Core/Src/main.c:342:6:Error_Handler	4	static,ignoring_inline_asm
