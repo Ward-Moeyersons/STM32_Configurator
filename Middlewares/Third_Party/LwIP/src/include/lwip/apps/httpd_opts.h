@@ -62,7 +62,7 @@
  * does not depend on the CGI parameters.
  */
 #if !defined LWIP_HTTPD_CGI || defined __DOXYGEN__
-#define LWIP_HTTPD_CGI            0
+#define LWIP_HTTPD_CGI            1
 #endif
 
 /** Set this to 1 to support CGI (new style).
@@ -77,7 +77,7 @@
  * Use this CGI handler if you want CGI information passed on to SSI.
  */
 #if !defined LWIP_HTTPD_CGI_SSI || defined __DOXYGEN__
-#define LWIP_HTTPD_CGI_SSI        0
+#define LWIP_HTTPD_CGI_SSI        1
 #endif
 
 /** Set this to 1 to support SSI (Server-Side-Includes)
@@ -123,7 +123,7 @@
 
 /** Set this to 1 to support HTTP POST */
 #if !defined LWIP_HTTPD_SUPPORT_POST || defined __DOXYGEN__
-#define LWIP_HTTPD_SUPPORT_POST   1
+#define LWIP_HTTPD_SUPPORT_POST   0
 #endif
 
 /* The maximum number of parameters that the CGI handler can be sent. */

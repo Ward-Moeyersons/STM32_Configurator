@@ -30,20 +30,31 @@
 #include "lwip/err.h"
 #include "lwip/pbuf.h"
 #include "lwip/apps/httpd.h"
+#include "lwip/apps/fs.h"
 #include "lwip/opt.h"
 #include <string.h>
+#include "cJSON.h"
+#include <stdio.h>
 
 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+typedef struct {
+    int port;
+    char* label;
+    char* mode;
+    int value;
+    int isEnabled;
+	GPIO_TypeDef* gpio_port;
+	uint16_t gpio_pin;
+} gpio_t;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define NUM_GPIOS 1
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -58,6 +69,22 @@ UART_HandleTypeDef huart1;
 /* USER CODE BEGIN PV */
 typedef unsigned short u16_t;
 typedef unsigned char  u8_t;
+
+gpio_t gpios[NUM_GPIOS] = {
+    {
+        .port = 0,
+        .label = "USER_LED_1",
+        .mode = "output",
+        .value = 0,
+        .isEnabled = 1,
+		.gpio_port = LED_GPIO_Port,
+		.gpio_pin = LED_Pin
+    }
+};
+
+char *post_data_buffer = NULL;
+int post_data_len = 0;
+int post_data_offset = 0;
 
 /* USER CODE END PV */
 
@@ -80,39 +107,58 @@ int _write(int file, char *ptr, int len) {
 	}
     return len;
 }
- void httpd_cgi_handler(struct fs_file *file, const char* uri, int iNumParams,
-                              char **pcParam, char **pcValue ){
-	 printf("uri = %s, aantal param = %d\n",uri,iNumParams);
-	 if(iNumParams > 0){
-		 printf("eerste param: %s=%s\n",pcParam[0],pcValue[0]);
+
+void httpd_cgi_handler(struct fs_file *file, const char* uri, int iNumParams,
+                              char **pcParam, char **pcValue )
+{
+	 if (strcmp(uri, "/api/gpio") == 0) {
+		 cJSON *root = cJSON_CreateArray();
+		 for (int i = 0; i < NUM_GPIOS; i++) {
+			 cJSON *gpio_json = cJSON_CreateObject();
+			 cJSON_AddNumberToObject(gpio_json, "port", gpios[i].port);
+			 cJSON_AddStringToObject(gpio_json, "label", gpios[i].label);
+			 cJSON_AddStringToObject(gpio_json, "mode", gpios[i].mode);
+			 gpios[i].value = HAL_GPIO_ReadPin(gpios[i].gpio_port, gpios[i].gpio_pin);
+			 cJSON_AddNumberToObject(gpio_json, "value", gpios[i].value);
+			 cJSON_AddBoolToObject(gpio_json, "isEnabled", gpios[i].isEnabled);
+			 cJSON_AddItemToArray(root, gpio_json);
+		 }
+		 char *json_string = cJSON_PrintUnformatted(root);
+		 cJSON_Delete(root);
+
+		 file->data = json_string;
+		 file->len = strlen(json_string);
+		 file->pextension = NULL; 
 	 }
+}
 
- }
 
-/*
- struct pbuf {
-   struct pbuf *next;   // pointer to next buffer in chain /
-   void *payload;        // pointer to actual data /
-   u16_t len;            // length of this buffer /
-   u16_t tot_len;        // total length of buffer chain /
-   u16_t ref;            // reference count /
-   u8_t type;            // pbuf type
-   u8_t flags;           // misc flags
- };
-
-*/
  err_t httpd_post_begin(void *connection, const char *uri,
                         const char *http_request, u16_t http_request_len,
                         int content_len, char *response_uri,
                         u16_t response_uri_len, u8_t *post_auto_wnd)
  {
      LWIP_UNUSED_ARG(connection);
-     LWIP_UNUSED_ARG(uri);
      LWIP_UNUSED_ARG(http_request);
      LWIP_UNUSED_ARG(http_request_len);
-     LWIP_UNUSED_ARG(content_len);
      LWIP_UNUSED_ARG(post_auto_wnd);
 
+	 if (strcmp(uri, "/api/gpio") == 0) {
+		 if (post_data_buffer != NULL) {
+			 free(post_data_buffer);
+			 post_data_buffer = NULL;
+			 post_data_len = 0;
+		 }
+		 post_data_offset = 0;
+
+		 if (content_len > 0) {
+			 post_data_buffer = (char*)malloc(content_len + 1);
+			 if (post_data_buffer == NULL) {
+				 return ERR_MEM;
+			 }
+			 post_data_len = content_len;
+		 }
+	 }
 
      strncpy(response_uri, "/index.html", response_uri_len);
 
@@ -126,17 +172,18 @@ int _write(int file, char *ptr, int len) {
 
      struct pbuf *q = p;
 
-        printf("POST packet ontvangen:\n");
-
         while (q != NULL)
         {
-            // Print de bytes als tekst
-            printf("%.*s", q->len, (char *)q->payload);
+            if (post_data_offset + q->len <= post_data_len) {
+            	memcpy(post_data_buffer + post_data_offset, q->payload, q->len);
+            	post_data_offset += q->len;
+            }
 
-            q = q->next; // Volgende block
+            q = q->next;
         }
-
-        printf("\n====================\n");
+        if (post_data_buffer != NULL) {
+        	post_data_buffer[post_data_offset] = '\0';
+        }
 
 
      pbuf_free(p);
@@ -148,6 +195,45 @@ int _write(int file, char *ptr, int len) {
                           u16_t response_uri_len)
  {
      LWIP_UNUSED_ARG(connection);
+
+     if (post_data_buffer != NULL) {
+    	 printf("POST data received: %s\n", post_data_buffer);
+
+         cJSON *root = cJSON_Parse(post_data_buffer);
+         if (root != NULL) {
+             if (cJSON_IsArray(root)) {
+                 cJSON *gpio_json;
+                 cJSON_ArrayForEach(gpio_json, root) {
+                     cJSON *port_json = cJSON_GetObjectItem(gpio_json, "port");
+                     if (cJSON_IsNumber(port_json)) {
+                         int port = port_json->valueint;
+                         if (port >= 0 && port < NUM_GPIOS) {
+                             cJSON *mode_json = cJSON_GetObjectItem(gpio_json, "mode");
+                             if (cJSON_IsString(mode_json) && (mode_json->valuestring != NULL)) {
+                                 gpios[port].mode = mode_json->valuestring;
+                             }
+
+                             cJSON *value_json = cJSON_GetObjectItem(gpio_json, "value");
+                             if (cJSON_IsNumber(value_json)) {
+                                 gpios[port].value = value_json->valueint;
+                                 if (strcmp(gpios[port].mode, "output") == 0) {
+                                	 if(gpios[port].value >= 0 && gpios[port].value <=10){
+                                		 HAL_GPIO_WritePin(gpios[port].gpio_port, gpios[port].gpio_pin, gpios[port].value);
+                                	 }
+                                 }
+                             }
+                         }
+                     }
+                 }
+             }
+             cJSON_Delete(root);
+         }
+
+
+         free(post_data_buffer);
+         post_data_buffer = NULL;
+         post_data_len = 0;
+     }
 
      strncpy(response_uri, "/index.html", response_uri_len);
  }

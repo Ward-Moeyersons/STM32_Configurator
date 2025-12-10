@@ -15,7 +15,7 @@
 ../Middlewares/Third_Party/LwIP/src/apps/http/httpd.c:1729:1:http_post_rxpbuf	24	static
 ../Middlewares/Third_Party/LwIP/src/apps/http/httpd.c:1785:1:http_post_request	80	static
 ../Middlewares/Third_Party/LwIP/src/apps/http/httpd.c:1952:1:http_parse_request	80	static
-../Middlewares/Third_Party/LwIP/src/apps/http/httpd.c:2176:1:http_find_file	80	static
+../Middlewares/Third_Party/LwIP/src/apps/http/httpd.c:2176:1:http_find_file	88	static
 ../Middlewares/Third_Party/LwIP/src/apps/http/httpd.c:2305:1:http_init_file	48	static
 ../Middlewares/Third_Party/LwIP/src/apps/http/httpd.c:2424:1:http_err	24	static
 ../Middlewares/Third_Party/LwIP/src/apps/http/httpd.c:2441:1:http_sent	32	static
@@ -24,3 +24,4 @@
 ../Middlewares/Third_Party/LwIP/src/apps/http/httpd.c:2601:1:http_accept	32	static
 ../Middlewares/Third_Party/LwIP/src/apps/http/httpd.c:2638:1:httpd_init_pcb	24	static
 ../Middlewares/Third_Party/LwIP/src/apps/http/httpd.c:2659:1:httpd_init	16	static
+../Middlewares/Third_Party/LwIP/src/apps/http/httpd.c:2736:1:http_set_cgi_handlers	16	static
