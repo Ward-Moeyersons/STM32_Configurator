@@ -18,7 +18,7 @@
         <option value="1" selected>Output</option>
     </select>
     <input type="checkbox" name="port0Enabled" checked> Enabled
-    <input type="number" name="port0Value" value="1">
+    <input type="checkbox" id="port0Value" value="0">
     <br>
 
     <button type="button" onclick="saveConfig()">Save</button>
@@ -30,12 +30,13 @@ function saveConfig() {
     // Maak JSON array van je poorten (hier Port 0 als voorbeeld)
     const modeSelect = document.querySelector('[name="port0Mode"]');
     const mode = modeSelect.value == "1" ? "output" : "input";
+    const value = document.getElementById("port0Value").checked ? 1 : 0;
     
     const data = [
         {
             port: 0,
             mode: mode,   // gebruik "input" of "output"
-            value: parseInt(document.querySelector('[name="port0Value"]').value),
+            value: value,
             isEnabled: document.querySelector('[name="port0Enabled"]').checked
         }
     ];

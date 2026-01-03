@@ -77,8 +77,8 @@ gpio_t gpios[NUM_GPIOS] = {
         .mode = "output",
         .value = 0,
         .isEnabled = 1,
-		.gpio_port = LED_GPIO_Port,
-		.gpio_pin = LED_Pin
+		.gpio_port = D13_GPIO_Port,
+		.gpio_pin = D13_Pin
     }
 };
 
@@ -194,44 +194,79 @@ void httpd_cgi_handler(struct fs_file *file, const char* uri, int iNumParams,
      return ERR_OK;
  }
 
+
  void httpd_post_finished(void *connection, char *response_uri,
-                          u16_t response_uri_len)
+                           u16_t response_uri_len)
  {
      LWIP_UNUSED_ARG(connection);
 
-     if (post_data_buffer != NULL) {
-    	 printf("POST data received: %s\n", post_data_buffer);
+     if (post_data_buffer != NULL)
+     {
+         printf("POST data received: %s\n", post_data_buffer);
 
          cJSON *root = cJSON_Parse(post_data_buffer);
-         if (root != NULL) {
-             if (cJSON_IsArray(root)) {
-                 cJSON *gpio_json;
-                 cJSON_ArrayForEach(gpio_json, root) {
-                     cJSON *port_json = cJSON_GetObjectItem(gpio_json, "port");
-                     if (cJSON_IsNumber(port_json)) {
-                         int port = port_json->valueint;
-                         if (port >= 0 && port < NUM_GPIOS) {
-                             cJSON *mode_json = cJSON_GetObjectItem(gpio_json, "mode");
-                             if (cJSON_IsString(mode_json) && (mode_json->valuestring != NULL)) {
-                                 gpios[port].mode = mode_json->valuestring;
-                             }
+         if (root && cJSON_IsArray(root))
+         {
+             cJSON *gpio_json;
+             cJSON_ArrayForEach(gpio_json, root)
+             {
+                 cJSON *port_json = cJSON_GetObjectItem(gpio_json, "port");
+                 if (!cJSON_IsNumber(port_json))
+                     continue;
 
-                             cJSON *value_json = cJSON_GetObjectItem(gpio_json, "value");
-                             if (cJSON_IsNumber(value_json)) {
-                                 gpios[port].value = value_json->valueint;
-                                 if (strcmp(gpios[port].mode, "output") == 0) {
-                                	 if(gpios[port].value >= 0 && gpios[port].value <=10){
-                                		 HAL_GPIO_WritePin(gpios[port].gpio_port, gpios[port].gpio_pin, gpios[port].value);
-                                	 }
-                                 }
-                             }
-                         }
+                 int port = port_json->valueint;
+                 if (port < 0 || port >= NUM_GPIOS)
+                     continue;
+
+                 /* -------- mode -------- */
+                 cJSON *mode_json = cJSON_GetObjectItem(gpio_json, "mode");
+                 if (cJSON_IsString(mode_json) && mode_json->valuestring)
+                 {
+                     strncpy(gpios[port].mode,
+                             mode_json->valuestring,
+                             sizeof(gpios[port].mode) - 1);
+                     gpios[port].mode[sizeof(gpios[port].mode) - 1] = '\0';
+                 }
+
+                 /* -------- isEnabled (BOOLEAN!) -------- */
+                 cJSON *enabled_json = cJSON_GetObjectItem(gpio_json, "isEnabled");
+                 if (cJSON_IsBool(enabled_json))
+                 {
+                     gpios[port].isEnabled = cJSON_IsTrue(enabled_json);
+                 }
+
+                 /* -------- value -------- */
+                 cJSON *value_json = cJSON_GetObjectItem(gpio_json, "value");
+                 if (cJSON_IsNumber(value_json))
+                 {
+                     gpios[port].value = value_json->valueint ? 1 : 0;
+                 }
+
+                 /* -------- GPIO OUTPUT -------- */
+                 if (strcmp(gpios[port].mode, "output") == 0)
+                 {
+                     if (gpios[port].isEnabled)
+                     {
+                         HAL_GPIO_WritePin(
+                             gpios[port].gpio_port,
+                             gpios[port].gpio_pin,
+                             gpios[port].value ? GPIO_PIN_SET : GPIO_PIN_RESET
+                         );
+                     }
+                     else
+                     {
+                         /* Forceer UIT wanneer disabled */
+                         HAL_GPIO_WritePin(
+                             gpios[port].gpio_port,
+                             gpios[port].gpio_pin,
+                             GPIO_PIN_RESET
+                         );
                      }
                  }
              }
-             cJSON_Delete(root);
          }
 
+         cJSON_Delete(root);
 
          free(post_data_buffer);
          post_data_buffer = NULL;
@@ -240,6 +275,7 @@ void httpd_cgi_handler(struct fs_file *file, const char* uri, int iNumParams,
 
      strncpy(response_uri, "/index.html", response_uri_len);
  }
+
 
 
 
