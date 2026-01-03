@@ -26,7 +26,7 @@ This project implements a REST API on an STM32F746G microcontroller to control G
 
 - **URL:** `/api/gpio`
 - **Method:** `POST`
-- **Description:** Sets the status of one or more GPIO pins.
+- **Description:** Sets the value and/or mode of one or more GPIO pins.
 - **Request Body:**
   ```json
   [

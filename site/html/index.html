@@ -4,53 +4,125 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
-    <title>STM32 Configurator</title>
+    <title>STM32 GPIO Control</title>
 </head>
 <body>
-    <label for="configName">Config Name:</label>
-    <input type="text" id="configName" name="configName" value="MyConfig"><br><br>
 
-    <h2>Poorten</h2>
-    <label>Port 0:</label>
-    <input type="text" name="port0Label" value="LED1">
-    <select name="port0Mode">
-        <option value="0">Input</option>
-        <option value="1" selected>Output</option>
-    </select>
-    <input type="checkbox" name="port0Enabled" checked> Enabled
-    <input type="checkbox" id="port0Value" value="0">
-    <br>
+    <h1>STM32 GPIO Control</h1>
 
-    <button type="button" onclick="saveConfig()">Save</button>
+    <div class="controls">
+        <button onclick="saveConfig()">Save Configuration</button>
+        <button onclick="fetchGpios()">Refresh Status</button>
+    </div>
+
+    <table id="gpio-table">
+        <thead>
+            <tr>
+                <th>Port</th>
+                <th>Label</th>
+                <th>Mode</th>
+                <th>Value</th>
+                <th>Enabled</th>
+            </tr>
+        </thead>
+        <tbody id="gpio-body">
+            <!-- GPIO rows will be inserted here by JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        // This function runs when the page loads
+        window.onload = fetchGpios;
+
+        /**
+         * Fetches the current GPIO configuration from the server and populates the table.
+         */
+        function fetchGpios() {
+            fetch('/api/gpio')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('gpio-body');
+                    tableBody.innerHTML = ''; // Clear existing table rows
+                    
+                    // For each GPIO pin returned by the API, create a new table row
+                    data.forEach(gpio => {
+                        const row = document.createElement('tr');
+                        row.setAttribute('data-port', gpio.port);
+
+                        // Port Number cell
+                        row.innerHTML += `<td>${gpio.port}</td>`;
+                        
+                        // Label cell
+                        row.innerHTML += `<td>${gpio.label}</td>`;
+
+                        // Mode selection cell (Dropdown)
+                        row.innerHTML += `
+                            <td>
+                                <select name="mode" ${!gpio.isEnabled ? 'disabled' : ''}>
+                                    <option value="output" ${gpio.mode === 'output' ? 'selected' : ''}>Output</option>
+                                    <option value="input" ${gpio.mode === 'input' ? 'selected' : ''}>Input</option>
+                                </select>
+                            </td>`;
+
+                        // Value cell (Checkbox for output, read-only for input)
+                        const isOutput = gpio.mode === 'output';
+                        const valueChecked = gpio.value ? 'checked' : '';
+                        const valueDisabled = !isOutput || !gpio.isEnabled ? 'disabled' : '';
+                        row.innerHTML += `
+                            <td>
+                                <input type="checkbox" name="value" ${valueChecked} ${valueDisabled}>
+                            </td>`;
+
+                        // isEnabled cell (Checkbox)
+                        const enabledChecked = gpio.isEnabled ? 'checked' : '';
+                        row.innerHTML += `
+                            <td>
+                                <input type="checkbox" name="enabled" ${enabledChecked}>
+                            </td>`;
+
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(err => {
+                    console.error('Error fetching GPIOs:', err);
+                    const tableBody = document.getElementById('gpio-body');
+                    tableBody.innerHTML = '<tr><td colspan="5">Error loading data. Is the device connected?</td></tr>';
+                });
+        }
+
+        /**
+         * Collects the configuration from the table and sends it to the server.
+         */
+        function saveConfig() {
+            const data = [];
+            const rows = document.querySelectorAll('#gpio-body tr');
+
+            rows.forEach(row => {
+                const port = parseInt(row.getAttribute('data-port'));
+                const mode = row.querySelector('[name="mode"]').value;
+                const value = row.querySelector('[name="value"]').checked ? 1 : 0;
+                const isEnabled = row.querySelector('[name="enabled"]').checked;
+
+                data.push({ port, mode, value, isEnabled });
+            });
+
+            console.log("Sending data:", data);
+
+            fetch("/api/gpio", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                console.log("POST successful");
+                // Refresh the UI to show the state acknowledged by the server
+                setTimeout(fetchGpios, 250); 
+            })
+            .catch(err => console.error("POST error:", err));
+        }
+    </script>
 
 </body>
-
-<script>
-function saveConfig() {
-    // Maak JSON array van je poorten (hier Port 0 als voorbeeld)
-    const modeSelect = document.querySelector('[name="port0Mode"]');
-    const mode = modeSelect.value == "1" ? "output" : "input";
-    const value = document.getElementById("port0Value").checked ? 1 : 0;
-    
-    const data = [
-        {
-            port: 0,
-            mode: mode,   // gebruik "input" of "output"
-            value: value,
-            isEnabled: document.querySelector('[name="port0Enabled"]').checked
-        }
-    ];
-
-    fetch("/api/gpio", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => console.log("POST sent"))
-    .catch(err => console.error(err));
-}
-</script>
-
 </html>
