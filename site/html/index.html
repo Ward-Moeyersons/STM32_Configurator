@@ -7,26 +7,49 @@
     <title>STM32 Configurator</title>
 </head>
 <body>
-    <form action="/save_config" method="POST">
     <label for="configName">Config Name:</label>
     <input type="text" id="configName" name="configName" value="MyConfig"><br><br>
 
     <h2>Poorten</h2>
     <label>Port 0:</label>
-    <input type="number" name="port0Number" value="1">
+    <input type="text" name="port0Label" value="LED1">
     <select name="port0Mode">
         <option value="0">Input</option>
-        <option value="1">Output</option>
+        <option value="1" selected>Output</option>
     </select>
-    <input type="text" name="port0Label" value="LED1">
     <input type="checkbox" name="port0Enabled" checked> Enabled
+    <input type="number" name="port0Value" value="1">
     <br>
 
-    <!-- Herhaal voor poorten 1 t/m 7 -->
-    
-    <br>
-    <button type="submit">Save</button>
-</form>
+    <button type="button" onclick="saveConfig()">Save</button>
 
 </body>
+
+<script>
+function saveConfig() {
+    // Maak JSON array van je poorten (hier Port 0 als voorbeeld)
+    const modeSelect = document.querySelector('[name="port0Mode"]');
+    const mode = modeSelect.value == "1" ? "output" : "input";
+    
+    const data = [
+        {
+            port: 0,
+            mode: mode,   // gebruik "input" of "output"
+            value: parseInt(document.querySelector('[name="port0Value"]').value),
+            isEnabled: document.querySelector('[name="port0Enabled"]').checked
+        }
+    ];
+
+    fetch("/api/gpio", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => console.log("POST sent"))
+    .catch(err => console.error(err));
+}
+</script>
+
 </html>
