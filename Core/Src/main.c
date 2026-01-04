@@ -25,6 +25,7 @@
 #include "echo_server.h"
 #include "lwipopts.h"
 #include "httpd_opts.h"
+#include "cgi_ssi_handlers.h"
 
 
 #include "lwip/err.h"
@@ -33,35 +34,15 @@
 #include "lwip/apps/fs.h"
 #include "lwip/opt.h"
 #include <string.h>
-#include "cJSON.h"
-#include <stdio.h>
-
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-/**
- * @brief  Structure to hold the configuration and state of a single GPIO pin.
- *
- * This structure is used to abstract the properties of a GPIO pin,
- * allowing it to be easily managed and represented in the web UI and API.
- */
-typedef struct {
-    int port;               // A unique identifier for the pin in the API (e.g., 0, 1, 2...).
-    char label[16];         // A human-readable name for the pin (e.g., "USER_LED_1", "D1").
-    char mode[10];          // The current operating mode ("output" or "input").
-    int value;              // The current digital value (0 or 1). Read-only for inputs.
-    int isEnabled;          // A flag to enable or disable control of the pin.
-    GPIO_TypeDef* gpio_port; // The HAL GPIO port (e.g., GPIOA, GPIOB).
-    uint16_t gpio_pin;      // The HAL GPIO pin number (e.g., GPIO_PIN_0).
-} gpio_t;
+
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-// The total number of GPIO pins being managed by the application.
-#define NUM_GPIOS 17
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -76,40 +57,6 @@ UART_HandleTypeDef huart1;
 /* USER CODE BEGIN PV */
 typedef unsigned short u16_t;
 typedef unsigned char  u8_t;
-
-/**
- * @brief Array of GPIO pin configurations.
- *
- * This array holds the configuration for all GPIO pins that are exposed through the web API.
- * The order of pins in this array determines the 'port' number used in the API.
- * - D13 is the user LED.
- * - BTN is the blue user button, configured as an input.
- * - D0-D15 are the digital I/O pins. They are initialized as outputs but can be changed to inputs via the API.
- */
-gpio_t gpios[NUM_GPIOS] = {
-    { .port = 0, .label = "D13", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D13_GPIO_Port, .gpio_pin = D13_Pin }, // User LED
-    { .port = 1, .label = "BTN", .mode = "input",  .value = 0, .isEnabled = 1, .gpio_port = BTN_GPIO_Port, .gpio_pin = BTN_Pin }, // User Button
-    { .port = 2, .label = "D0", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D0_GPIO_Port, .gpio_pin = D0_Pin },
-    { .port = 3, .label = "D1", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D1_GPIO_Port, .gpio_pin = D1_Pin },
-    { .port = 4, .label = "D2", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D2_GPIO_Port, .gpio_pin = D2_Pin },
-    { .port = 5, .label = "D3", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D3_GPIO_Port, .gpio_pin = D3_Pin },
-    { .port = 6, .label = "D4", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D4_GPIO_Port, .gpio_pin = D4_Pin },
-    { .port = 7, .label = "D5", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D5_GPIO_Port, .gpio_pin = D5_Pin },
-    { .port = 8, .label = "D6", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D6_GPIO_Port, .gpio_pin = D6_Pin },
-    { .port = 9, .label = "D7", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D7_GPIO_Port, .gpio_pin = D7_Pin },
-    { .port = 10, .label = "D8", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D8_GPIO_Port, .gpio_pin = D8_Pin },
-    { .port = 11, .label = "D9", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D9_GPIO_Port, .gpio_pin = D9_Pin },
-    { .port = 12, .label = "D10", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D10_GPIO_Port, .gpio_pin = D10_Pin },
-    { .port = 13, .label = "D11", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D11_GPIO_Port, .gpio_pin = D11_Pin },
-    { .port = 14, .label = "D12", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D12_GPIO_Port, .gpio_pin = D12_Pin },
-    { .port = 15, .label = "D14", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D14_GPIO_Port, .gpio_pin = D14_Pin },
-    { .port = 16, .label = "D15", .mode = "output", .value = 0, .isEnabled = 1, .gpio_port = D15_GPIO_Port, .gpio_pin = D15_Pin }
-};
-
-char *post_data_buffer = NULL;
-int post_data_len = 0;
-int post_data_offset = 0;
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -131,232 +78,6 @@ int _write(int file, char *ptr, int len) {
 	}
     return len;
 }
-
-void httpd_cgi_handler(struct fs_file *file, const char* uri, int iNumParams, char **pcParam, char **pcValue)
-{
-    static char response_buffer[2048]; // Static buffer to hold the full HTTP response
-    static char json_body_buffer[1500]; // Buffer for just the JSON body
-
-    if (strcmp(uri, "/api/gpio") == 0)
-    {
-        // Update GPIO input pin states before generating the JSON response
-        for (int i = 0; i < NUM_GPIOS; i++) {
-            if (strcmp(gpios[i].mode, "input") == 0) {
-                gpios[i].value = HAL_GPIO_ReadPin(gpios[i].gpio_port, gpios[i].gpio_pin);
-            }
-        }
-
-        cJSON *root = cJSON_CreateArray();
-        if (!root) {
-            // If cJSON array creation fails, jump to the error handler
-            goto error;
-        }
-
-        // Populate the JSON array with GPIO data
-        for (int i = 0; i < NUM_GPIOS; i++) {
-            cJSON *gpio_obj = cJSON_CreateObject();
-            if (!gpio_obj) {
-                cJSON_Delete(root);
-                goto error; // Jump to error handler if object creation fails
-            }
-            cJSON_AddNumberToObject(gpio_obj, "port", gpios[i].port);
-            cJSON_AddStringToObject(gpio_obj, "label", gpios[i].label);
-            cJSON_AddStringToObject(gpio_obj, "mode", gpios[i].mode);
-            cJSON_AddNumberToObject(gpio_obj, "value", gpios[i].value);
-            cJSON_AddBoolToObject(gpio_obj, "isEnabled", gpios[i].isEnabled);
-            cJSON_AddItemToArray(root, gpio_obj);
-        }
-
-        // Print the JSON object to the pre-allocated buffer
-        if (!cJSON_PrintPreallocated(root, json_body_buffer, sizeof(json_body_buffer), 0)) {
-            cJSON_Delete(root);
-            goto error; // Jump to error handler if printing fails (e.g., buffer too small)
-        }
-
-        cJSON_Delete(root); // Clean up cJSON object tree
-
-        // Format the full HTTP response with headers and JSON body
-        snprintf(response_buffer, sizeof(response_buffer),
-                 "HTTP/1.0 200 OK\r\n"
-                 "Content-Type: application/json\r\n"
-                 "Content-Length: %d\r\n\r\n"
-                 "%s",
-                 (int)strlen(json_body_buffer), json_body_buffer);
-
-        // Set the file structure to point to the response
-        file->data = response_buffer;
-        file->len = strlen(response_buffer);
-        file->flags = FS_FILE_FLAGS_HEADER_INCLUDED; // Tell LwIP headers are included
-        file->pextension = NULL;
-        return;
-
-error:
-        // In case of an error, send a 500 Internal Server Error response
-        snprintf(response_buffer, sizeof(response_buffer),
-                 "HTTP/1.0 500 Internal Server Error\r\n\r\n");
-        file->data = response_buffer;
-        file->len = strlen(response_buffer);
-        file->flags = FS_FILE_FLAGS_HEADER_INCLUDED;
-        file->pextension = NULL;
-    }
-    else
-    {
-        // For any other URI, generate a 404 Not Found response
-        snprintf(response_buffer, sizeof(response_buffer), "HTTP/1.0 404 Not Found\r\n\r\n");
-        file->data = response_buffer;
-        file->len = strlen(response_buffer);
-        file->flags = FS_FILE_FLAGS_HEADER_INCLUDED;
-        file->pextension = NULL;
-    }
-}
-
-
- err_t httpd_post_begin(void *connection, const char *uri,
-                        const char *http_request, u16_t http_request_len,
-                        int content_len, char *response_uri,
-                        u16_t response_uri_len, u8_t *post_auto_wnd)
- {
-	 printf("POST uri=%s len=%d\n", uri, content_len);
-
-
-     LWIP_UNUSED_ARG(connection);
-     LWIP_UNUSED_ARG(http_request);
-     LWIP_UNUSED_ARG(http_request_len);
-     LWIP_UNUSED_ARG(post_auto_wnd);
-
-	 if (strcmp(uri, "/api/gpio") == 0) {
-		 if (post_data_buffer != NULL) {
-			 free(post_data_buffer);
-			 post_data_buffer = NULL;
-			 post_data_len = 0;
-		 }
-		 post_data_offset = 0;
-
-		 if (content_len > 0) {
-			 post_data_buffer = (char*)malloc(content_len + 1);
-			 if (post_data_buffer == NULL) {
-				 return ERR_MEM;
-			 }
-			 post_data_len = content_len;
-		 }
-	 }
-
-     strncpy(response_uri, "/index.html", response_uri_len);
-
-     return ERR_OK;
- }
-
- err_t httpd_post_receive_data(void *connection, struct pbuf *p)
- {
-     LWIP_UNUSED_ARG(connection);
-
-
-     struct pbuf *q = p;
-
-        while (q != NULL)
-        {
-            if (post_data_offset + q->len <= post_data_len) {
-            	memcpy(post_data_buffer + post_data_offset, q->payload, q->len);
-            	post_data_offset += q->len;
-            }
-
-            q = q->next;
-        }
-        if (post_data_buffer != NULL) {
-        	post_data_buffer[post_data_offset] = '\0';
-        }
-
-
-     pbuf_free(p);
-
-     return ERR_OK;
- }
-
-
- void httpd_post_finished(void *connection, char *response_uri,
-                           u16_t response_uri_len)
- {
-     LWIP_UNUSED_ARG(connection);
-
-     if (post_data_buffer != NULL)
-     {
-         printf("POST data received: %s\n", post_data_buffer);
-
-         cJSON *root = cJSON_Parse(post_data_buffer);
-         if (root && cJSON_IsArray(root))
-         {
-             cJSON *gpio_json;
-             cJSON_ArrayForEach(gpio_json, root)
-             {
-                 cJSON *port_json = cJSON_GetObjectItem(gpio_json, "port");
-                 if (!cJSON_IsNumber(port_json))
-                     continue;
-
-                 int port = port_json->valueint;
-                 if (port < 0 || port >= NUM_GPIOS)
-                     continue;
-
-                 /* -------- mode -------- */
-                 cJSON *mode_json = cJSON_GetObjectItem(gpio_json, "mode");
-                 if (cJSON_IsString(mode_json) && mode_json->valuestring)
-                 {
-                     strncpy(gpios[port].mode,
-                             mode_json->valuestring,
-                             sizeof(gpios[port].mode) - 1);
-                     gpios[port].mode[sizeof(gpios[port].mode) - 1] = '\0';
-                 }
-
-                 /* -------- isEnabled (BOOLEAN!) -------- */
-                 cJSON *enabled_json = cJSON_GetObjectItem(gpio_json, "isEnabled");
-                 if (cJSON_IsBool(enabled_json))
-                 {
-                     gpios[port].isEnabled = cJSON_IsTrue(enabled_json);
-                 }
-
-                 /* -------- value -------- */
-                 cJSON *value_json = cJSON_GetObjectItem(gpio_json, "value");
-                 if (cJSON_IsNumber(value_json))
-                 {
-                     gpios[port].value = value_json->valueint ? 1 : 0;
-                 }
-
-                 /* -------- GPIO OUTPUT -------- */
-                 if (strcmp(gpios[port].mode, "output") == 0)
-                 {
-                     if (gpios[port].isEnabled)
-                     {
-                         HAL_GPIO_WritePin(
-                             gpios[port].gpio_port,
-                             gpios[port].gpio_pin,
-                             gpios[port].value ? GPIO_PIN_SET : GPIO_PIN_RESET
-                         );
-                     }
-                     else
-                     {
-                         /* Forceer UIT wanneer disabled */
-                         HAL_GPIO_WritePin(
-                             gpios[port].gpio_port,
-                             gpios[port].gpio_pin,
-                             GPIO_PIN_RESET
-                         );
-                     }
-                 }
-             }
-         }
-
-         cJSON_Delete(root);
-
-         free(post_data_buffer);
-         post_data_buffer = NULL;
-         post_data_len = 0;
-     }
-
-     strncpy(response_uri, "/index.html", response_uri_len);
- }
-
-
-
-
 /* USER CODE END 0 */
 
 /**
@@ -393,6 +114,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   echo_init();
   httpd_init();
+  cgi_ssi_init();
   printf("Server stared\n");
   /* USER CODE END 2 */
 
@@ -504,6 +226,7 @@ static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
+
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
@@ -599,6 +322,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(D6_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
+
   /* USER CODE END MX_GPIO_Init_2 */
 }
 

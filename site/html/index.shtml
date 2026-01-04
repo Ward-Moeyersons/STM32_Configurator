@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>STM32 GPIO Control</title>
+</head>
+<body>
+
+    <h1>STM32 GPIO Control</h1>
+
+    <div class="container">
+        <div class="card">
+            <h2>Input Pins (D4-D9)</h2>
+            <table class="gpio-table">
+                <thead>
+                    <tr>
+                        <th>Pin</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>D4</td>
+                        <td><!--#d4_state--></td>
+                    </tr>
+                    <tr>
+                        <td>D5</td>
+                        <td><!--#d5_state--></td>
+                    </tr>
+                    <tr>
+                        <td>D6</td>
+                        <td><!--#d6_state--></td>
+                    </tr>
+                    <tr>
+                        <td>D7</td>
+                        <td><!--#d7_state--></td>
+                    </tr>
+                    <tr>
+                        <td>D8</td>
+                        <td><!--#d8_state--></td>
+                    </tr>
+                    <tr>
+                        <td>D9</td>
+                        <td><!--#d9_state--></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Output Pins (D10-D15)</h2>
+            <form action="/io.cgi" method="get">
+                <table class="gpio-table">
+                    <thead>
+                        <tr>
+                            <th>Pin</th>
+                            <th>Control</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>D10</td>
+                            <td><input type="checkbox" name="D10" value="1"></td>
+                        </tr>
+                        <tr>
+                            <td>D11</td>
+                            <td><input type="checkbox" name="D11" value="1"></td>
+                        </tr>
+                        <tr>
+                            <td>D12</td>
+                            <td><input type="checkbox" name="D12" value="1"></td>
+                        </tr>
+                        <tr>
+                            <td>D13</td>
+                            <td><input type="checkbox" name="D13" value="1"></td>
+                        </tr>
+                        <tr>
+                            <td>D14</td>
+                            <td><input type="checkbox" name="D14" value="1"></td>
+                        </tr>
+                        <tr>
+                            <td>D15</td>
+                            <td><input type="checkbox" name="D15" value="1"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="controls">
+                    <button type="submit">Set Outputs</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        // On page load, or when the form is submitted and page reloads, 
+        // we might want to reflect the current state of the output checkboxes.
+        // A simple way to do this without a separate GET API for outputs is to 
+        // have the server set them, but that's more complex with this simple CGI.
+        // For now, they will reset on each load. A more advanced implementation
+        // might use AJAX to submit and then update the UI without a full reload.
+    </script>
+</body>
+</html>

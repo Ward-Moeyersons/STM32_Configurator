@@ -1,6 +1,0 @@
-<html>
-<body>
-<h1>CGI test</h1>
-<!--#exec cgi="mytest" -->
-</body>
-</html>

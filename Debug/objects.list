@@ -1,4 +1,5 @@
 "./Core/Src/cJSON.o"
+"./Core/Src/cgi_ssi_handlers.o"
 "./Core/Src/echo_server.o"
 "./Core/Src/main.o"
 "./Core/Src/stm32f7xx_hal_msp.o"
