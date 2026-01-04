@@ -60,7 +60,7 @@ const char * cgi_handler_set_io(int iIndex, int iNumParams, char *pcParam[], cha
             HAL_GPIO_WritePin(D15_GPIO_Port, D15_Pin, GPIO_PIN_SET);
         }
     }
-    return "/index.html"; // Redirect to the main page
+    return "/index.shtml"; // Redirect to the main page via HTTP 302
 }
 
 u16_t ssi_handler(int iIndex, char *pcInsert, int iInsertLen) {
