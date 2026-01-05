@@ -12,77 +12,178 @@
 
     <div class="container">
         <div class="card">
-            <h2>Input Pins (D4-D9)</h2>
-            <table class="gpio-table">
-                <thead>
-                    <tr>
-                        <th>Pin</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>D4</td>
-                        <td><!--#d4_state--></td>
-                    </tr>
-                    <tr>
-                        <td>D5</td>
-                        <td><!--#d5_state--></td>
-                    </tr>
-                    <tr>
-                        <td>D6</td>
-                        <td><!--#d6_state--></td>
-                    </tr>
-                    <tr>
-                        <td>D7</td>
-                        <td><!--#d7_state--></td>
-                    </tr>
-                    <tr>
-                        <td>D8</td>
-                        <td><!--#d8_state--></td>
-                    </tr>
-                    <tr>
-                        <td>D9</td>
-                        <td><!--#d9_state--></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="card">
-            <h2>Output Pins (D10-D15)</h2>
+            <h2>Pin Configuration</h2>
             <form action="/io.cgi" method="get">
                 <table class="gpio-table">
                     <thead>
                         <tr>
                             <th>Pin</th>
-                            <th>Control</th>
+                            <th>Enable</th>
+                            <th>Label</th>
+                            <th>Mode</th>
+                            <th>Initial State</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
+                            <td>D0</td>
+                            <td><input type="checkbox" id="enableBoxD0" class="enable-box"></td>
+                            <td><input type="text" id="labelD0"></td>
+                            <td><select name="D0mode" id="modeD0">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D0state" value="0" id="stateD0"></td>
+                        </tr>
+                        <tr>
+                            <td>D1</td>
+                            <td><input type="checkbox" name="D1" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D1label"></td>
+                            <td><select name="D1mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D1state" value="0" id="stateD1"></td>
+                        </tr>
+                        <tr>
+                            <td>D2</td>
+                            <td><input type="checkbox" name="D2" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D2label"></td>
+                            <td><select name="D2mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D2state" value="0" id="stateD2"></td>
+                        </tr>   
+                        <tr>
+                            <td>D3</td>
+                            <td><input type="checkbox" name="D3" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D3label"></td>
+                            <td><select name="D3mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D3state" value="0" id="stateD3"></td>
+                        </tr>
+                        <tr>
+                            <td>D4</td>
+                            <td><input type="checkbox" name="D4" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D4label"></td>
+                            <td><select name="D4mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D4state" value="0" id="stateD4"></td>
+                        </tr>
+                        <tr>
+                            <td>D5</td>
+                            <td><input type="checkbox" name="D5" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D5label"></td>
+                            <td><select name="D5mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D5state" value="0" id="stateD5"></td>
+                        </tr>
+                        <tr>    
+                            <td>D6</td>
+                            <td><input type="checkbox" name="D6" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D6label"></td>
+                            <td><select name="D6mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D6state" value="0" id="stateD6"></td>
+                        </tr>
+                        <tr>
+                            <td>D7</td>
+                            <td><input type="checkbox" name="D7" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D7label"></td>
+                            <td><select name="D7mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D7state" value="0" id="stateD7"></td>
+                        </tr>
+                        <tr>
+                            <td>D8</td>
+                            <td><input type="checkbox" name="D8" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D8label"></td>
+                            <td><select name="D8mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D8state" value="0" id="stateD8"></td>
+                        </tr>
+                        <tr>
+                            <td>D9</td>
+                            <td><input type="checkbox" name="D9" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D9label"></td>
+                            <td><select name="D9mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D9state" value="0" id="stateD9"></td>
+                        </tr>
+                        <tr>
                             <td>D10</td>
-                            <td><input type="checkbox" name="D10" value="1"></td>
+                            <td><input type="checkbox" name="D10" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D10label"></td>
+                            <td><select name="D10mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D10state" value="0" id="stateD10"></td>
                         </tr>
                         <tr>
                             <td>D11</td>
-                            <td><input type="checkbox" name="D11" value="1"></td>
+                            <td><input type="checkbox" name="D11" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D11label"></td>
+                            <td><select name="D11mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D11state" value="0" id="stateD11"></td>
                         </tr>
                         <tr>
                             <td>D12</td>
-                            <td><input type="checkbox" name="D12" value="1"></td>
+                            <td><input type="checkbox" name="D12" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D12label"></td>
+                            <td><select name="D12mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D12state" value="0" id="stateD12"></td>
                         </tr>
-                        <tr>
+                        <tr>    
                             <td>D13</td>
-                            <td><input type="checkbox" name="D13" value="1"></td>
+                            <td><input type="checkbox" name="D13" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D13label"></td>
+                            <td><select name="D13mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D13state" value="0" id="stateD13"></td>
                         </tr>
                         <tr>
                             <td>D14</td>
-                            <td><input type="checkbox" name="D14" value="1"></td>
+                            <td><input type="checkbox" name="D14" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D14label"></td>
+                            <td><select name="D14mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D14state" value="0" id="stateD14"></td>
                         </tr>
                         <tr>
                             <td>D15</td>
-                            <td><input type="checkbox" name="D15" value="1"></td>
+                            <td><input type="checkbox" name="D15" value="1" class="enable-box"></td>
+                            <td><input type="text" name="D15label"></td>
+                            <td><select name="D15mode">
+                                <option value="input">Input</option>
+                                <option value="output">Output</option>
+                            </select></td>
+                            <td><input type="checkbox" name="D15state" value="0" id="stateD15"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -92,13 +193,21 @@
             </form>
         </div>
     </div>
-    <script>
-        // On page load, or when the form is submitted and page reloads, 
-        // we might want to reflect the current state of the output checkboxes.
-        // A simple way to do this without a separate GET API for outputs is to 
-        // have the server set them, but that's more complex with this simple CGI.
-        // For now, they will reset on each load. A more advanced implementation
-        // might use AJAX to submit and then update the UI without a full reload.
-    </script>
+
 </body>
+<script>
+  document.querySelectorAll(".enable-box").forEach(enableBox => {
+    const row = enableBox.closest("tr");
+    const controls = row.querySelectorAll("input:not(.enable-box), select");
+
+    // start disabled
+    controls.forEach(el => el.disabled = !enableBox.checked);
+
+    enableBox.addEventListener("change", () => {
+      controls.forEach(el => {
+        el.disabled = !enableBox.checked;
+      });
+    });
+  });
+</script>
 </html>
