@@ -12,77 +12,111 @@
 
     <div class="container">
         <div class="card">
-            <h2>Input Pins (D4-D9)</h2>
-            <table class="gpio-table">
-                <thead>
-                    <tr>
-                        <th>Pin</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>D4</td>
-                        <td><!--#d4_state--></td>
-                    </tr>
-                    <tr>
-                        <td>D5</td>
-                        <td><!--#d5_state--></td>
-                    </tr>
-                    <tr>
-                        <td>D6</td>
-                        <td><!--#d6_state--></td>
-                    </tr>
-                    <tr>
-                        <td>D7</td>
-                        <td><!--#d7_state--></td>
-                    </tr>
-                    <tr>
-                        <td>D8</td>
-                        <td><!--#d8_state--></td>
-                    </tr>
-                    <tr>
-                        <td>D9</td>
-                        <td><!--#d9_state--></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="card">
-            <h2>Output Pins (D10-D15)</h2>
+            <h2>Pin Control</h2>
             <form action="/io.cgi" method="get">
                 <table class="gpio-table">
                     <thead>
                         <tr>
                             <th>Pin</th>
-                            <th>Control</th>
+                            <th>Label</th>
+                            <th>State</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr data-pin="D0">
+                            <td>D0</td>
+                            <td>label for D0</td>
+                            <td><input type="checkbox" name="D0state" value="0" id="stateD0"></td>
+                        </tr>
+
+                        <tr data-pin="D1">
+                            <td>D1</td>
+                            <td>label for D1</td>
+                            <td><input type="checkbox" name="D1state" value="0" id="stateD1"></td>
+                        </tr>
+
+                        <tr data-pin="D2">
+                            <td>D2</td>
+                            <td>label for D2</td>
+                            <td><input type="checkbox" name="D2state" value="0" id="stateD2"></td>
+                        </tr>
+
+                        <tr data-pin="D3">
+                            <td>D3</td>
+                            <td>label for D3</td>
+                            <td><input type="checkbox" name="D3state" value="0" id="stateD3"></td>
+                        </tr>
+
+                        <tr data-pin="D4">
+                            <td>D4</td>
+                            <td>label for D4</td>
+                            <td><input type="checkbox" name="D4state" value="0" id="stateD4"></td>
+                        </tr>
+
+                        <tr data-pin="D5">
+                            <td>D5</td>
+                            <td>label for D5</td>
+                            <td><input type="checkbox" name="D5state" value="0" id="stateD5"></td>
+                        </tr>
+
+                        <tr data-pin="D6">
+                            <td>D6</td>
+                            <td>label for D6</td>
+                            <td><input type="checkbox" name="D6state" value="0" id="stateD6"></td>
+                        </tr>
+
+                        <tr data-pin="D7">
+                            <td>D7</td>
+                            <td>label for D7</td>
+                            <td><input type="checkbox" name="D7state" value="0" id="stateD7"></td>
+                        </tr>
+
+                        <tr data-pin="D8">
+                            <td>D8</td>
+                            <td>label for D8</td>
+                            <td><input type="checkbox" name="D8state" value="0" id="stateD8"></td>
+                        </tr>
+
+                        <tr data-pin="D9">
+                            <td>D9</td>
+                            <td>label for D9</td>
+                            <td><input type="checkbox" name="D9state" value="0" id="stateD9"></td>
+                        </tr>
+
+                        <tr data-pin="D10">
                             <td>D10</td>
-                            <td><input type="checkbox" name="D10" value="1"></td>
+                            <td>label for D10</td>
+                            <td><input type="checkbox" name="D10state" value="0" id="stateD10"></td>
                         </tr>
-                        <tr>
+
+                        <tr data-pin="D11">
                             <td>D11</td>
-                            <td><input type="checkbox" name="D11" value="1"></td>
+                            <td>label for D11</td>
+                            <td><input type="checkbox" name="D11state" value="0" id="stateD11"></td>
                         </tr>
-                        <tr>
+
+                        <tr data-pin="D12">
                             <td>D12</td>
-                            <td><input type="checkbox" name="D12" value="1"></td>
+                            <td>label for D12</td>
+                            <td><input type="checkbox" name="D12state" value="0" id="stateD12"></td>
                         </tr>
-                        <tr>
+
+                        <tr data-pin="D13">
                             <td>D13</td>
-                            <td><input type="checkbox" name="D13" value="1"></td>
+                            <td>label for D13</td>
+                            <td><input type="checkbox" name="D13state" value="0" id="stateD13"></td>
                         </tr>
-                        <tr>
+
+                        <tr data-pin="D14">
                             <td>D14</td>
-                            <td><input type="checkbox" name="D14" value="1"></td>
+                            <td>label for D14</td>
+                            <td><input type="checkbox" name="D14state" value="0" id="stateD14"></td>
                         </tr>
-                        <tr>
+
+                        <tr data-pin="D15">
                             <td>D15</td>
-                            <td><input type="checkbox" name="D15" value="1"></td>
+                            <td>label for D15</td>
+                            <td><input type="checkbox" name="D15state" value="0" id="stateD15"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -92,13 +126,29 @@
             </form>
         </div>
     </div>
-    <script>
-        // On page load, or when the form is submitted and page reloads, 
-        // we might want to reflect the current state of the output checkboxes.
-        // A simple way to do this without a separate GET API for outputs is to 
-        // have the server set them, but that's more complex with this simple CGI.
-        // For now, they will reset on each load. A more advanced implementation
-        // might use AJAX to submit and then update the UI without a full reload.
-    </script>
+
 </body>
+<script>
+  // Parse GET parameters
+  const params = new URLSearchParams(window.location.search);
+
+  // Collect enabled pins (D0–D15) based on Dnlabel
+  const enabledPins = new Set();
+
+  for (const key of params.keys()) {
+    const match = key.match(/^D(\d{1,2})$/);
+    if (match) {
+      enabledPins.add("D" + match[1]);
+    }
+  }
+
+  // Show/hide rows
+  document.querySelectorAll("tbody tr").forEach(row => {
+    const pin = row.dataset.pin;
+    if (!enabledPins.has(pin)) {
+      row.style.display = "none";
+    }
+  });
+</script>
+
 </html>
