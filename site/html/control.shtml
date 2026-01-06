@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
     <title>STM32 GPIO Control</title>
+    <style>
+        .state-frame {
+            border: none;
+            width: 100%;
+            height: 25px; /* Adjust as needed */
+        }
+    </style>
 </head>
 <body>
     <h1>STM32 GPIO Control</h1>
@@ -63,8 +70,8 @@ if (!pinConfig) {
                 const isChecked = stateParams.get(`s${pinNumber}`) === '1';
                 stateControl = `<input type="checkbox" data-pin="${pinNumber}" value="1" ${isChecked ? 'checked' : ''}>`;
             } else {
-                // For input pins, we use an SSI tag to let the server inject the state.
-                stateControl = `<!--#d${pinNumber}state-->`;
+                // For input pins, we now use an iframe to call a specific CGI for that pin.
+                stateControl = `<iframe src="/inputs/d${pinNumber}.cgi" class="state-frame" scrolling="no"></iframe>`;
             }
 
             row.innerHTML = `

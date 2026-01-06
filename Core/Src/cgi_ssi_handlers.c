@@ -14,23 +14,7 @@
 
 // Forward declarations
 const char * cgi_handler_set_io(int iIndex, int iNumParams, char *pcParam[], char *pcValue[]);
-u16_t ssi_handler(int iIndex, char *pcInsert, int iInsertLen);
-
-// CGI handler for setting GPIOs
-const tCGI g_cgi_handlers[] = {
-    {
-        "/io.cgi",
-        cgi_handler_set_io
-    }
-};
-
-// SSI handler
-#define NUM_SSI_TAGS 16
-const char * g_ssi_tags[NUM_SSI_TAGS] = {
-    "d0state", "d1state", "d2state", "d3state", "d4state", "d5state", 
-    "d6state", "d7state", "d8state", "d9state", "d10state", "d11state",
-    "d12state", "d13state", "d14state", "d15state"
-};
+const char * cgi_get_input_state(int iIndex, int iNumParams, char *pcParam[], char *pcValue[]);
 
 // Helper struct and array to map pin numbers to GPIO ports and pins
 typedef struct {
@@ -45,23 +29,14 @@ const GpioPinMapping gpio_pins[16] = {
     {D12_GPIO_Port, D12_Pin}, {D13_GPIO_Port, D13_Pin}, {D14_GPIO_Port, D14_Pin}, {D15_GPIO_Port, D15_Pin}
 };
 
-void cgi_ssi_init(void) {
-    http_set_cgi_handlers(g_cgi_handlers, 1);
-    http_set_ssi_handler(ssi_handler, g_ssi_tags, NUM_SSI_TAGS);
-}
-
+// Main handler for setting output pins
 const char * cgi_handler_set_io(int iIndex, int iNumParams, char *pcParam[], char *pcValue[]) {
-    static char redirect_url[256]; // Static buffer for the redirect URL. 256 is plenty now.
-
-    // Start building the redirect URL
+    static char redirect_url[256];
     int url_len = snprintf(redirect_url, sizeof(redirect_url), "/control.shtml?");
 
     for (int i = 0; i < iNumParams; i++) {
-        // Only process state parameters 's'
         if (pcParam[i][0] == 's' && pcParam[i][1] != '\0') {
-            // Append current parameter to the redirect URL
             url_len += snprintf(redirect_url + url_len, sizeof(redirect_url) - url_len, "%s=%s&", pcParam[i], pcValue[i]);
-
             int pin_num = atoi(pcParam[i] + 1);
             if (pin_num >= 0 && pin_num < 16) {
                 GPIO_PinState pin_state = (strcmp(pcValue[i], "1") == 0) ? GPIO_PIN_SET : GPIO_PIN_RESET;
@@ -70,24 +45,55 @@ const char * cgi_handler_set_io(int iIndex, int iNumParams, char *pcParam[], cha
         }
     }
 
-    // Remove trailing '&' or '?'
     if (url_len > 0 && (redirect_url[url_len - 1] == '&' || redirect_url[url_len - 1] == '?')) {
         redirect_url[url_len - 1] = '\0';
     } else if (iNumParams == 0) {
-        // If there were no parameters, remove the '?' to have a clean URL
          redirect_url[url_len - 1] = '\0';
     }
 
     return redirect_url;
 }
 
-u16_t ssi_handler(int iIndex, char *pcInsert, int iInsertLen) {
-    if (iIndex >= 0 && iIndex < 16) {
-        if (HAL_GPIO_ReadPin(gpio_pins[iIndex].port, gpio_pins[iIndex].pin) == GPIO_PIN_SET) {
-            return snprintf(pcInsert, iInsertLen, "HIGH");
-        } else {
-            return snprintf(pcInsert, iInsertLen, "LOW");
+// Handler for getting individual input pin states
+const char* cgi_get_input_state(int iIndex, int iNumParams, char *pcParam[], char *pcValue[]) {
+    // The pin number is derived from the CGI handler's index in the array.
+    // Index 0 is /io.cgi, so the input pins start from index 1.
+    int pin_num = iIndex - 1;
+
+    if (pin_num >= 0 && pin_num < 16) {
+        if (HAL_GPIO_ReadPin(gpio_pins[pin_num].port, gpio_pins[pin_num].pin) == GPIO_PIN_SET) {
+            return "/high.html";
         }
     }
-    return snprintf(pcInsert, iInsertLen, "Unknown");
+    return "/low.html";
+}
+
+
+// CGI handler table
+const tCGI g_cgi_handlers[] = {
+    // Handler for setting outputs
+    {"/io.cgi", cgi_handler_set_io},
+    // Handlers for reading each digital input
+    {"/inputs/d0.cgi", cgi_get_input_state},
+    {"/inputs/d1.cgi", cgi_get_input_state},
+    {"/inputs/d2.cgi", cgi_get_input_state},
+    {"/inputs/d3.cgi", cgi_get_input_state},
+    {"/inputs/d4.cgi", cgi_get_input_state},
+    {"/inputs/d5.cgi", cgi_get_input_state},
+    {"/inputs/d6.cgi", cgi_get_input_state},
+    {"/inputs/d7.cgi", cgi_get_input_state},
+    {"/inputs/d8.cgi", cgi_get_input_state},
+    {"/inputs/d9.cgi", cgi_get_input_state},
+    {"/inputs/d10.cgi", cgi_get_input_state},
+    {"/inputs/d11.cgi", cgi_get_input_state},
+    {"/inputs/d12.cgi", cgi_get_input_state},
+    {"/inputs/d13.cgi", cgi_get_input_state},
+    {"/inputs/d14.cgi", cgi_get_input_state},
+    {"/inputs/d15.cgi", cgi_get_input_state}
+};
+
+
+void cgi_ssi_init(void) {
+    // We now have 1+16 CGI handlers
+    http_set_cgi_handlers(g_cgi_handlers, 17);
 }
