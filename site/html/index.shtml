@@ -28,7 +28,7 @@
                         <tr>
                             <td>D0</td>
                             <td><input type="checkbox" id="enableBoxD0" class="enable-box"></td>
-                            <td><input type="text" id="labelD0"></td>
+                            <td><input type="text" name="D0label"></td>
                             <td><select name="D0mode" id="modeD0">
                                 <option value="input">Input</option>
                                 <option value="output">Output</option>
@@ -37,7 +37,7 @@
                         </tr>
                         <tr>
                             <td>D1</td>
-                            <td><input type="checkbox" name="D1" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D1" class="enable-box"></td>
                             <td><input type="text" name="D1label"></td>
                             <td><select name="D1mode">
                                 <option value="input">Input</option>
@@ -47,7 +47,7 @@
                         </tr>
                         <tr>
                             <td>D2</td>
-                            <td><input type="checkbox" name="D2" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D2" class="enable-box"></td>
                             <td><input type="text" name="D2label"></td>
                             <td><select name="D2mode">
                                 <option value="input">Input</option>
@@ -57,7 +57,7 @@
                         </tr>   
                         <tr>
                             <td>D3</td>
-                            <td><input type="checkbox" name="D3" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D3" class="enable-box"></td>
                             <td><input type="text" name="D3label"></td>
                             <td><select name="D3mode">
                                 <option value="input">Input</option>
@@ -67,7 +67,7 @@
                         </tr>
                         <tr>
                             <td>D4</td>
-                            <td><input type="checkbox" name="D4" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D4" class="enable-box"></td>
                             <td><input type="text" name="D4label"></td>
                             <td><select name="D4mode">
                                 <option value="input">Input</option>
@@ -77,7 +77,7 @@
                         </tr>
                         <tr>
                             <td>D5</td>
-                            <td><input type="checkbox" name="D5" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D5" class="enable-box"></td>
                             <td><input type="text" name="D5label"></td>
                             <td><select name="D5mode">
                                 <option value="input">Input</option>
@@ -87,7 +87,7 @@
                         </tr>
                         <tr>    
                             <td>D6</td>
-                            <td><input type="checkbox" name="D6" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D6" class="enable-box"></td>
                             <td><input type="text" name="D6label"></td>
                             <td><select name="D6mode">
                                 <option value="input">Input</option>
@@ -97,7 +97,7 @@
                         </tr>
                         <tr>
                             <td>D7</td>
-                            <td><input type="checkbox" name="D7" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D7" class="enable-box"></td>
                             <td><input type="text" name="D7label"></td>
                             <td><select name="D7mode">
                                 <option value="input">Input</option>
@@ -107,7 +107,7 @@
                         </tr>
                         <tr>
                             <td>D8</td>
-                            <td><input type="checkbox" name="D8" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D8" class="enable-box"></td>
                             <td><input type="text" name="D8label"></td>
                             <td><select name="D8mode">
                                 <option value="input">Input</option>
@@ -117,7 +117,7 @@
                         </tr>
                         <tr>
                             <td>D9</td>
-                            <td><input type="checkbox" name="D9" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D9" class="enable-box"></td>
                             <td><input type="text" name="D9label"></td>
                             <td><select name="D9mode">
                                 <option value="input">Input</option>
@@ -127,7 +127,7 @@
                         </tr>
                         <tr>
                             <td>D10</td>
-                            <td><input type="checkbox" name="D10" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D10" class="enable-box"></td>
                             <td><input type="text" name="D10label"></td>
                             <td><select name="D10mode">
                                 <option value="input">Input</option>
@@ -137,7 +137,7 @@
                         </tr>
                         <tr>
                             <td>D11</td>
-                            <td><input type="checkbox" name="D11" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D11" class="enable-box"></td>
                             <td><input type="text" name="D11label"></td>
                             <td><select name="D11mode">
                                 <option value="input">Input</option>
@@ -147,7 +147,7 @@
                         </tr>
                         <tr>
                             <td>D12</td>
-                            <td><input type="checkbox" name="D12" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D12" class="enable-box"></td>
                             <td><input type="text" name="D12label"></td>
                             <td><select name="D12mode">
                                 <option value="input">Input</option>
@@ -157,7 +157,7 @@
                         </tr>
                         <tr>    
                             <td>D13</td>
-                            <td><input type="checkbox" name="D13" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D13" class="enable-box"></td>
                             <td><input type="text" name="D13label"></td>
                             <td><select name="D13mode">
                                 <option value="input">Input</option>
@@ -167,7 +167,7 @@
                         </tr>
                         <tr>
                             <td>D14</td>
-                            <td><input type="checkbox" name="D14" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D14" class="enable-box"></td>
                             <td><input type="text" name="D14label"></td>
                             <td><select name="D14mode">
                                 <option value="input">Input</option>
@@ -177,7 +177,7 @@
                         </tr>
                         <tr>
                             <td>D15</td>
-                            <td><input type="checkbox" name="D15" value="1" class="enable-box"></td>
+                            <td><input type="checkbox" name="D15" class="enable-box"></td>
                             <td><input type="text" name="D15label"></td>
                             <td><select name="D15mode">
                                 <option value="input">Input</option>
