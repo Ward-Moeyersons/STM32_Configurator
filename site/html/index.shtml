@@ -7,13 +7,11 @@
     <title>STM32 GPIO Control</title>
 </head>
 <body>
-
     <h1>STM32 GPIO Control</h1>
-
     <div class="container">
         <div class="card">
             <h2>Pin Configuration</h2>
-            <form action="/io.cgi" method="get">
+            <form id="config-form" action="control.shtml" method="get">
                 <table class="gpio-table">
                     <thead>
                         <tr>
@@ -24,190 +22,101 @@
                             <th>Initial State</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>D0</td>
-                            <td><input type="checkbox" id="enableBoxD0" class="enable-box"></td>
-                            <td><input type="text" name="D0label"></td>
-                            <td><select name="D0mode" id="modeD0">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D0state" value="0" id="stateD0"></td>
-                        </tr>
-                        <tr>
-                            <td>D1</td>
-                            <td><input type="checkbox" name="D1" class="enable-box"></td>
-                            <td><input type="text" name="D1label"></td>
-                            <td><select name="D1mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D1state" value="0" id="stateD1"></td>
-                        </tr>
-                        <tr>
-                            <td>D2</td>
-                            <td><input type="checkbox" name="D2" class="enable-box"></td>
-                            <td><input type="text" name="D2label"></td>
-                            <td><select name="D2mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D2state" value="0" id="stateD2"></td>
-                        </tr>   
-                        <tr>
-                            <td>D3</td>
-                            <td><input type="checkbox" name="D3" class="enable-box"></td>
-                            <td><input type="text" name="D3label"></td>
-                            <td><select name="D3mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D3state" value="0" id="stateD3"></td>
-                        </tr>
-                        <tr>
-                            <td>D4</td>
-                            <td><input type="checkbox" name="D4" class="enable-box"></td>
-                            <td><input type="text" name="D4label"></td>
-                            <td><select name="D4mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D4state" value="0" id="stateD4"></td>
-                        </tr>
-                        <tr>
-                            <td>D5</td>
-                            <td><input type="checkbox" name="D5" class="enable-box"></td>
-                            <td><input type="text" name="D5label"></td>
-                            <td><select name="D5mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D5state" value="0" id="stateD5"></td>
-                        </tr>
-                        <tr>    
-                            <td>D6</td>
-                            <td><input type="checkbox" name="D6" class="enable-box"></td>
-                            <td><input type="text" name="D6label"></td>
-                            <td><select name="D6mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D6state" value="0" id="stateD6"></td>
-                        </tr>
-                        <tr>
-                            <td>D7</td>
-                            <td><input type="checkbox" name="D7" class="enable-box"></td>
-                            <td><input type="text" name="D7label"></td>
-                            <td><select name="D7mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D7state" value="0" id="stateD7"></td>
-                        </tr>
-                        <tr>
-                            <td>D8</td>
-                            <td><input type="checkbox" name="D8" class="enable-box"></td>
-                            <td><input type="text" name="D8label"></td>
-                            <td><select name="D8mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D8state" value="0" id="stateD8"></td>
-                        </tr>
-                        <tr>
-                            <td>D9</td>
-                            <td><input type="checkbox" name="D9" class="enable-box"></td>
-                            <td><input type="text" name="D9label"></td>
-                            <td><select name="D9mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D9state" value="0" id="stateD9"></td>
-                        </tr>
-                        <tr>
-                            <td>D10</td>
-                            <td><input type="checkbox" name="D10" class="enable-box"></td>
-                            <td><input type="text" name="D10label"></td>
-                            <td><select name="D10mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D10state" value="0" id="stateD10"></td>
-                        </tr>
-                        <tr>
-                            <td>D11</td>
-                            <td><input type="checkbox" name="D11" class="enable-box"></td>
-                            <td><input type="text" name="D11label"></td>
-                            <td><select name="D11mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D11state" value="0" id="stateD11"></td>
-                        </tr>
-                        <tr>
-                            <td>D12</td>
-                            <td><input type="checkbox" name="D12" class="enable-box"></td>
-                            <td><input type="text" name="D12label"></td>
-                            <td><select name="D12mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D12state" value="0" id="stateD12"></td>
-                        </tr>
-                        <tr>    
-                            <td>D13</td>
-                            <td><input type="checkbox" name="D13" class="enable-box"></td>
-                            <td><input type="text" name="D13label"></td>
-                            <td><select name="D13mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D13state" value="0" id="stateD13"></td>
-                        </tr>
-                        <tr>
-                            <td>D14</td>
-                            <td><input type="checkbox" name="D14" class="enable-box"></td>
-                            <td><input type="text" name="D14label"></td>
-                            <td><select name="D14mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D14state" value="0" id="stateD14"></td>
-                        </tr>
-                        <tr>
-                            <td>D15</td>
-                            <td><input type="checkbox" name="D15" class="enable-box"></td>
-                            <td><input type="text" name="D15label"></td>
-                            <td><select name="D15mode">
-                                <option value="input">Input</option>
-                                <option value="output">Output</option>
-                            </select></td>
-                            <td><input type="checkbox" name="D15state" value="0" id="stateD15"></td>
-                        </tr>
+                    <tbody id="gpio-table-body">
                     </tbody>
                 </table>
                 <div class="controls">
-                    <button type="submit">Set Outputs</button>
+                    <button type="submit">Configure Pins</button>
                 </div>
             </form>
         </div>
     </div>
-
-</body>
 <script>
-  document.querySelectorAll(".enable-box").forEach(enableBox => {
-    const row = enableBox.closest("tr");
-    const controls = row.querySelectorAll("input:not(.enable-box), select");
+window.addEventListener('load', () => {
+    const pinConfig = JSON.parse(sessionStorage.getItem('pinConfig'));
+    const pinStates = JSON.parse(sessionStorage.getItem('pinStates'));
 
-    // start disabled
-    controls.forEach(el => el.disabled = !enableBox.checked);
+    if (pinConfig) {
+        for (const pinNumber in pinConfig) {
+            if (pinConfig.hasOwnProperty(pinNumber)) {
+                const config = pinConfig[pinNumber];
+                const enableBox = document.querySelector(`.enable-box[data-pin="${pinNumber}"]`);
+                if (enableBox) {
+                    const row = enableBox.closest('tr');
+                    
+                    // Enable the pin and its controls
+                    enableBox.checked = true;
+                    const controls = row.querySelectorAll('input:not(.enable-box), select');
+                    controls.forEach(c => c.disabled = false);
 
-    enableBox.addEventListener("change", () => {
-      controls.forEach(el => {
-        el.disabled = !enableBox.checked;
-      });
+                    // Set label and mode
+                    row.querySelector(`input[name="l${pinNumber}"]`).value = config.label;
+                    row.querySelector(`select[name="p${pinNumber}"]`).value = config.mode;
+
+                    // Set state if available
+                    if (config.mode === 'out' && pinStates && pinStates[pinNumber]) {
+                        row.querySelector(`input[name="s${pinNumber}"]`).checked = (pinStates[pinNumber] === '1');
+                    }
+                }
+            }
+        }
+    }
+});
+
+const NUM_PINS = 16;
+const tableBody = document.getElementById('gpio-table-body');
+
+for (let i = 0; i < NUM_PINS; i++) {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>D${i}</td>
+        <td><input type="checkbox" class="enable-box" data-pin="${i}"></td>
+        <td><input type="text" name="l${i}" disabled></td>
+        <td>
+            <select name="p${i}" disabled>
+                <option value="in">Input</option>
+                <option value="out">Output</option>
+            </select>
+        </td>
+        <td><input type="checkbox" name="s${i}" value="1" disabled></td>
+    `;
+    tableBody.appendChild(row);
+}
+
+tableBody.addEventListener('change', (e) => {
+    if (e.target.classList.contains('enable-box')) {
+        const row = e.target.closest('tr');
+        const controls = row.querySelectorAll('input:not(.enable-box), select');
+        controls.forEach(c => c.disabled = !e.target.checked);
+    }
+});
+
+document.getElementById('config-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const pinConfig = {};
+    const stateParams = new URLSearchParams();
+    const enabledPins = document.querySelectorAll('.enable-box:checked');
+
+    enabledPins.forEach(pinCheckbox => {
+        const row = pinCheckbox.closest('tr');
+        const pinNumber = pinCheckbox.dataset.pin;
+        const label = row.querySelector(`input[name="l${pinNumber}"]`).value;
+        const mode = row.querySelector(`select[name="p${pinNumber}"]`).value;
+        
+        pinConfig[pinNumber] = {
+            mode: mode,
+            label: label || `D${pinNumber}`
+        };
+
+        if (mode === 'out') {
+            const state = row.querySelector(`input[name="s${pinNumber}"]`).checked ? '1' : '0';
+            stateParams.append(`s${pinNumber}`, state);
+        }
     });
-  });
+
+    sessionStorage.setItem('pinConfig', JSON.stringify(pinConfig));
+    window.location.href = `control.shtml?${stateParams.toString()}`;
+});
 </script>
+</body>
 </html>

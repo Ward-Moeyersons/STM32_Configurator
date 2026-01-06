@@ -7,179 +7,91 @@
     <title>STM32 GPIO Control</title>
 </head>
 <body>
-
     <h1>STM32 GPIO Control</h1>
-
-    <div class="container"> 
+    <div class="container">
         <div class="card">
             <h2>Pin Control</h2>
-            <form action="/io.cgi" method="get">
+            <form id="control-form" action="/io.cgi" method="get">
                 <table class="gpio-table">
                     <thead>
                         <tr>
                             <th>Pin</th>
                             <th>Label</th>
+                            <th>Mode</th>
                             <th>State</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr data-pin="D0">
-                            <td>D0</td>
-                            <td id="labelText0"></td><input type="text" id="labelD0" name="labelD0" hidden>
-                            <td><input type="checkbox" name="D0state" value="0" id="stateD0"></td>
-                        </tr>
-
-                        <tr data-pin="D1">
-                            <td>D1</td>
-                            <td id="labelText1"></td><input type="text" id="labelD1" name="labelD1" hidden>
-                            <td><input type="checkbox" name="D1state" value="0" id="stateD1"></td>
-                        </tr>
-
-                        <tr data-pin="D2">
-                            <td>D2</td>
-                            <td id="labelText2"></td><input type="text" id="labelD2" name="labelD2" hidden>
-                            <td><input type="checkbox" name="D2state" value="0" id="stateD2"></td>
-                        </tr>
-
-                        <tr data-pin="D3">
-                            <td>D3</td>
-                            <td id="labelText3"></td><input type="text" id="labelD3" name="labelD3" hidden>
-                            <td><input type="checkbox" name="D3state" value="0" id="stateD3"></td>
-                        </tr>
-
-                        <tr data-pin="D4">
-                            <td>D4</td>
-                            <td id="labelText4"></td><input type="text" id="labelD4" name="labelD4" hidden>
-                            <td><input type="checkbox" name="D4state" value="0" id="stateD4"></td>
-                        </tr>
-
-                        <tr data-pin="D5">
-                            <td>D5</td>
-                            <td id="labelText5"></td><input type="text" id="labelD5" name="labelD5" hidden>
-                            <td><input type="checkbox" name="D5state" value="0" id="stateD5"></td>
-                        </tr>
-
-                        <tr data-pin="D6">
-                            <td>D6</td>
-                            <td id="labelText6"></td><input type="text" id="labelD6" name="labelD6" hidden>
-                            <td><input type="checkbox" name="D6state" value="0" id="stateD6"></td>
-                        </tr>
-
-                        <tr data-pin="D7">
-                            <td>D7</td>
-                            <td id="labelText7"></td><input type="text" id="labelD7" name="labelD7" hidden>
-                            <td><input type="checkbox" name="D7state" value="0" id="stateD7"></td>
-                        </tr>
-
-                        <tr data-pin="D8">
-                            <td>D8</td>
-                            <td id="labelText8"></td><input type="text" id="labelD8" name="labelD8" hidden>
-                            <td><input type="checkbox" name="D8state" value="0" id="stateD8"></td>
-                        </tr>
-
-                        <tr data-pin="D9">
-                            <td>D9</td>
-                            <td id="labelText9"></td><input type="text" id="labelD9" name="labelD9" hidden>
-                            <td><input type="checkbox" name="D9state" value="0" id="stateD9"></td>
-                        </tr>
-
-                        <tr data-pin="D10">
-                            <td>D10</td>
-                            <td id="labelText10"></td><input type="text" id="labelD10" name="labelD10" hidden>
-                            <td><input type="checkbox" name="D10state" value="0" id="stateD10"></td>
-                        </tr>
-
-                        <tr data-pin="D11">
-                            <td>D11</td>
-                            <td id="labelText11"></td><input type="text" id="labelD11" name="labelD11" hidden>
-                            <td><input type="checkbox" name="D11state" value="0" id="stateD11"></td>
-                        </tr>
-
-                        <tr data-pin="D12">
-                            <td>D12</td>
-                            <td id="labelText12"></td><input type="text" id="labelD12" name="labelD12" hidden>
-                            <td><input type="checkbox" name="D12state" value="0" id="stateD12"></td>
-                        </tr>
-
-                        <tr data-pin="D13">
-                            <td>D13</td>
-                            <td id="labelText13"></td><input type="text" id="labelD13" name="labelD13" hidden>
-                            <td><input type="checkbox" name="D13state" value="0" id="stateD13"></td>
-                        </tr>
-
-                        <tr data-pin="D14">
-                            <td>D14</td>
-                            <td id="labelText14"></td><input type="text" id="labelD14" name="labelD14" hidden>
-                            <td><input type="checkbox" name="D14state" value="0" id="stateD14"></td>
-                        </tr>
-
-                        <tr data-pin="D15">
-                            <td>D15</td>
-                            <td id="labelText15"></td><input type="text" id="labelD15" name="labelD15" hidden>
-                            <td><input type="checkbox" name="D15state" value="0" id="stateD15"></td>
-                        </tr>
+                    <tbody id="gpio-table-body">
                     </tbody>
                 </table>
                 <div class="controls">
                     <button type="submit">Set Outputs</button>
+                    <button type="button" onclick="goBackToConfig()">Back to Config</button>
                 </div>
             </form>
         </div>
     </div>
-
-</body>
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const enabledPins = new Set();
+function goBackToConfig() {
+    const pinStates = {};
+    const outputCheckboxes = document.querySelectorAll('#control-form input[type="checkbox"]');
+    outputCheckboxes.forEach(cb => {
+        const pinNumber = cb.dataset.pin;
+        pinStates[pinNumber] = cb.checked ? '1' : '0';
+    });
+    sessionStorage.setItem('pinStates', JSON.stringify(pinStates));
+    window.location.href = 'index.shtml';
+}
 
-    document.getElementById("labelText0").textContent = params.get("D0label");
-    document.getElementById("labelText1").textContent = params.get("D1label");
-    document.getElementById("labelText2").textContent = params.get("D2label");
-    document.getElementById("labelText3").textContent = params.get("D3label");
-    document.getElementById("labelText4").textContent = params.get("D4label");
-    document.getElementById("labelText5").textContent = params.get("D5label");
-    document.getElementById("labelText6").textContent = params.get("D6label");
-    document.getElementById("labelText7").textContent = params.get("D7label");
-    document.getElementById("labelText8").textContent = params.get("D8label");
-    document.getElementById("labelText9").textContent = params.get("D9label");
-    document.getElementById("labelText10").textContent = params.get("D10label");
-    document.getElementById("labelText11").textContent = params.get("D11label");
-    document.getElementById("labelText12").textContent = params.get("D12label");
-    document.getElementById("labelText13").textContent = params.get("D13label");
-    document.getElementById("labelText14").textContent = params.get("D14label");
-    document.getElementById("labelText15").textContent = params.get("D15label");
+const pinConfig = JSON.parse(sessionStorage.getItem('pinConfig'));
+if (!pinConfig) {
+    window.location.href = 'index.shtml';
+} else {
+    const stateParams = new URLSearchParams(window.location.search);
+    const tableBody = document.getElementById('gpio-table-body');
+    const form = document.getElementById('control-form');
+    let outputPinCount = 0;
 
-    document.getElementById("labelD0").value = params.get("D0label");
-    document.getElementById("labelD1").value = params.get("D1label");
-    document.getElementById("labelD2").value = params.get("D2label");
-    document.getElementById("labelD3").value = params.get("D3label");
-    document.getElementById("labelD4").value = params.get("D4label");
-    document.getElementById("labelD5").value = params.get("D5label");
-    document.getElementById("labelD6").value = params.get("D6label");
-    document.getElementById("labelD7").value = params.get("D7label");
-    document.getElementById("labelD8").value = params.get("D8label");
-    document.getElementById("labelD9").value = params.get("D9label");
-    document.getElementById("labelD10").value = params.get("D10label");
-    document.getElementById("labelD11").value = params.get("D11label");
-    document.getElementById("labelD12").value = params.get("D12label");
-    document.getElementById("labelD13").value = params.get("D13label");
-    document.getElementById("labelD14").value = params.get("D14label");
-    document.getElementById("labelD15").value = params.get("D15label");
+    for (const pinNumber in pinConfig) {
+        if (pinConfig.hasOwnProperty(pinNumber)) {
+            const config = pinConfig[pinNumber];
+            const row = document.createElement('tr');
+            
+            let stateControl = '';
+            if (config.mode === 'out') {
+                outputPinCount++;
+                const isChecked = stateParams.get(`s${pinNumber}`) === '1';
+                stateControl = `<input type="checkbox" data-pin="${pinNumber}" value="1" ${isChecked ? 'checked' : ''}>`;
+            } else {
+                // For input pins, we use an SSI tag to let the server inject the state.
+                stateControl = `<!--#d${pinNumber}state-->`;
+            }
 
-  for (const key of params.keys()) {
-    const match = key.match(/^D(\d{1,2})label$/);
-    if (match) {
-      enabledPins.add("D" + match[1]);
+            row.innerHTML = `
+                <td>D${pinNumber}</td>
+                <td>${config.label}</td>
+                <td>${config.mode}</td>
+                <td>${stateControl}</td>
+            `;
+            tableBody.appendChild(row);
+        }
     }
-  }
 
-  document.querySelectorAll("tbody tr").forEach(row => {
-    const pin = row.dataset.pin;
-    if (!enabledPins.has(pin)) {
-      row.style.display = "none";
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newStates = new URLSearchParams();
+        const outputCheckboxes = form.querySelectorAll('input[type="checkbox"]');
+        outputCheckboxes.forEach(cb => {
+            const pinNumber = cb.dataset.pin;
+            newStates.append(`s${pinNumber}`, cb.checked ? '1' : '0');
+        });
+        window.location.href = `/io.cgi?${newStates.toString()}`;
+    });
+
+    if (outputPinCount === 0) {
+        document.querySelector('button[type="submit"]').disabled = true;
     }
-  });
+}
 </script>
-
-
+</body>
 </html>

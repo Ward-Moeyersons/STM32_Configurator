@@ -10,6 +10,7 @@
 #include "cgi_ssi_handlers.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 // Forward declarations
 const char * cgi_handler_set_io(int iIndex, int iNumParams, char *pcParam[], char *pcValue[]);
@@ -26,11 +27,23 @@ const tCGI g_cgi_handlers[] = {
 // SSI handler
 #define NUM_SSI_TAGS 16
 const char * g_ssi_tags[NUM_SSI_TAGS] = {
-    "d0_state", "d1_state", "d2_state", "d3_state", "d4_state", "d5_state", 
-    "d6_state", "d7_state", "d8_state", "d9_state", "d10_state", "d11_state",
-    "d12_state", "d13_state", "d14_state", "d15_state"
+    "d0state", "d1state", "d2state", "d3state", "d4state", "d5state", 
+    "d6state", "d7state", "d8state", "d9state", "d10state", "d11state",
+    "d12state", "d13state", "d14state", "d15state"
 };
 
+// Helper struct and array to map pin numbers to GPIO ports and pins
+typedef struct {
+    GPIO_TypeDef* port;
+    uint16_t pin;
+} GpioPinMapping;
+
+const GpioPinMapping gpio_pins[16] = {
+    {D0_GPIO_Port, D0_Pin}, {D1_GPIO_Port, D1_Pin}, {D2_GPIO_Port, D2_Pin}, {D3_GPIO_Port, D3_Pin},
+    {D4_GPIO_Port, D4_Pin}, {D5_GPIO_Port, D5_Pin}, {D6_GPIO_Port, D6_Pin}, {D7_GPIO_Port, D7_Pin},
+    {D8_GPIO_Port, D8_Pin}, {D9_GPIO_Port, D9_Pin}, {D10_GPIO_Port, D10_Pin}, {D11_GPIO_Port, D11_Pin},
+    {D12_GPIO_Port, D12_Pin}, {D13_GPIO_Port, D13_Pin}, {D14_GPIO_Port, D14_Pin}, {D15_GPIO_Port, D15_Pin}
+};
 
 void cgi_ssi_init(void) {
     http_set_cgi_handlers(g_cgi_handlers, 1);
@@ -38,178 +51,43 @@ void cgi_ssi_init(void) {
 }
 
 const char * cgi_handler_set_io(int iIndex, int iNumParams, char *pcParam[], char *pcValue[]) {
-    // Turn off all output pins first
-    HAL_GPIO_WritePin(D0_GPIO_Port, D0_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D1_GPIO_Port, D1_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D2_GPIO_Port, D2_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D3_GPIO_Port, D3_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D4_GPIO_Port, D4_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D5_GPIO_Port, D5_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D6_GPIO_Port, D6_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D7_GPIO_Port, D7_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D8_GPIO_Port, D8_Pin, GPIO_PIN_RESET);    
-    HAL_GPIO_WritePin(D9_GPIO_Port, D9_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D11_GPIO_Port, D11_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D12_GPIO_Port, D12_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D13_GPIO_Port, D13_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D14_GPIO_Port, D14_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(D15_GPIO_Port, D15_Pin, GPIO_PIN_RESET);
+    static char redirect_url[256]; // Static buffer for the redirect URL. 256 is plenty now.
 
-    // Turn on pins that are present in the request
+    // Start building the redirect URL
+    int url_len = snprintf(redirect_url, sizeof(redirect_url), "/control.shtml?");
+
     for (int i = 0; i < iNumParams; i++) {
-        if (strcmp(pcParam[i], "D0state") == 0) {
-            HAL_GPIO_WritePin(D0_GPIO_Port, D0_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D1state") == 0) {
-            HAL_GPIO_WritePin(D1_GPIO_Port, D1_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D2state") == 0) {
-            HAL_GPIO_WritePin(D2_GPIO_Port, D2_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D3state") == 0) {
-            HAL_GPIO_WritePin(D3_GPIO_Port, D3_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D4state") == 0) {
-            HAL_GPIO_WritePin(D4_GPIO_Port, D4_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D5state") == 0) {
-            HAL_GPIO_WritePin(D5_GPIO_Port, D5_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D6state") == 0) {
-            HAL_GPIO_WritePin(D6_GPIO_Port, D6_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D7state") == 0) {
-            HAL_GPIO_WritePin(D7_GPIO_Port, D7_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D8state") == 0) {
-            HAL_GPIO_WritePin(D8_GPIO_Port, D8_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D9state") == 0) {
-            HAL_GPIO_WritePin(D9_GPIO_Port, D9_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D10state") == 0) {
-            HAL_GPIO_WritePin(D10_GPIO_Port, D10_Pin, GPIO_PIN_SET);    
-        } else if (strcmp(pcParam[i], "D11state") == 0) {
-            HAL_GPIO_WritePin(D11_GPIO_Port, D11_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D12state") == 0) {
-            HAL_GPIO_WritePin(D12_GPIO_Port, D12_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D13state") == 0) {
-            HAL_GPIO_WritePin(D13_GPIO_Port, D13_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D14state") == 0) {
-            HAL_GPIO_WritePin(D14_GPIO_Port, D14_Pin, GPIO_PIN_SET);
-        } else if (strcmp(pcParam[i], "D15state") == 0) {
-            HAL_GPIO_WritePin(D15_GPIO_Port, D15_Pin, GPIO_PIN_SET);
+        // Only process state parameters 's'
+        if (pcParam[i][0] == 's' && pcParam[i][1] != '\0') {
+            // Append current parameter to the redirect URL
+            url_len += snprintf(redirect_url + url_len, sizeof(redirect_url) - url_len, "%s=%s&", pcParam[i], pcValue[i]);
+
+            int pin_num = atoi(pcParam[i] + 1);
+            if (pin_num >= 0 && pin_num < 16) {
+                GPIO_PinState pin_state = (strcmp(pcValue[i], "1") == 0) ? GPIO_PIN_SET : GPIO_PIN_RESET;
+                HAL_GPIO_WritePin(gpio_pins[pin_num].port, gpio_pins[pin_num].pin, pin_state);
+            }
         }
     }
-    return "/control.shtml"; // Redirect to the main page via HTTP 302
+
+    // Remove trailing '&' or '?'
+    if (url_len > 0 && (redirect_url[url_len - 1] == '&' || redirect_url[url_len - 1] == '?')) {
+        redirect_url[url_len - 1] = '\0';
+    } else if (iNumParams == 0) {
+        // If there were no parameters, remove the '?' to have a clean URL
+         redirect_url[url_len - 1] = '\0';
+    }
+
+    return redirect_url;
 }
 
 u16_t ssi_handler(int iIndex, char *pcInsert, int iInsertLen) {
-    switch (iIndex) {
-        case 0: // d0_state
-            if (HAL_GPIO_ReadPin(D0_GPIO_Port, D0_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 1: // d1_state
-            if (HAL_GPIO_ReadPin(D1_GPIO_Port, D1_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 2: // d2_state
-            if (HAL_GPIO_ReadPin(D2_GPIO_Port, D2_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 3: // d3_state
-            if (HAL_GPIO_ReadPin(D3_GPIO_Port, D3_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 4: // d4_state
-            if (HAL_GPIO_ReadPin(D4_GPIO_Port, D4_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 5: // d5_state
-            if (HAL_GPIO_ReadPin(D5_GPIO_Port, D5_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 6: // d6_state
-            if (HAL_GPIO_ReadPin(D6_GPIO_Port, D6_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 7: // d7_state
-            if (HAL_GPIO_ReadPin(D7_GPIO_Port, D7_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 8: // d8_state
-            if (HAL_GPIO_ReadPin(D8_GPIO_Port, D8_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 9: // d9_state
-            if (HAL_GPIO_ReadPin(D9_GPIO_Port, D9_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 10: // d10_state
-            if (HAL_GPIO_ReadPin(D10_GPIO_Port, D10_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 11: // d11_state
-            if (HAL_GPIO_ReadPin(D11_GPIO_Port, D11_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 12: // d12_state
-            if (HAL_GPIO_ReadPin(D12_GPIO_Port, D12_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 13: // d13_state
-            if (HAL_GPIO_ReadPin(D13_GPIO_Port, D13_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 14: // d14_state
-            if (HAL_GPIO_ReadPin(D14_GPIO_Port, D14_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        case 15: // d15_state
-            if (HAL_GPIO_ReadPin(D15_GPIO_Port, D15_Pin) == GPIO_PIN_SET) {
-                return snprintf(pcInsert, iInsertLen, "HIGH");
-            } else {
-                return snprintf(pcInsert, iInsertLen, "LOW");
-            }
-            break;
-        default:
-            return snprintf(pcInsert, iInsertLen, "Unknown");
+    if (iIndex >= 0 && iIndex < 16) {
+        if (HAL_GPIO_ReadPin(gpio_pins[iIndex].port, gpio_pins[iIndex].pin) == GPIO_PIN_SET) {
+            return snprintf(pcInsert, iInsertLen, "HIGH");
+        } else {
+            return snprintf(pcInsert, iInsertLen, "LOW");
+        }
     }
+    return snprintf(pcInsert, iInsertLen, "Unknown");
 }
